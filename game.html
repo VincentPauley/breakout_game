@@ -27,7 +27,7 @@
           canvas = document.getElementById('game-canvas');
           canvas_context = canvas.getContext('2d');
 
-          let frames_per_second = 30;
+          let frames_per_second = 60;
           setInterval( update_all, 1000 / frames_per_second); // <-- call update function using framerate var
       }
       /*
@@ -80,16 +80,53 @@
        * Returns: null, DOM Manipulation
        */
       function draw_frame() {
-          // draw to canvas with variable positions
-          canvas_context.fillStyle = 'limegreen';
-          canvas_context.fillRect(0,0, canvas.width, canvas.height);
-
-          canvas_context.fillStyle = '#FFF';
+          // refresh background:
+          color_rect(0,0, canvas.width,canvas.height, 'limegreen');
+          // refresh ball background:
+          color_circle(ball_x ,ball_y, 10, '#FFF');
+      }
+      /*
+       * Function: color_rect()
+       *
+       * draws a rectangle to the canvas
+       *
+       * Parameters:
+       *
+       *    topLeftX : (NUMBER) -> top left x coordinate of the rectangle
+       *    topLeftY : (NUMBER) -> top left rectangle y coordinate
+       *    rectangleWidth : (NUMBER) -> width of rectangle to draw
+       *    rectangleHeight : (NUMBER) -> height of rectangle to draw
+       *    fillColor : (STRING) -> hex/rgba string
+       *
+       * Returns: null, draws rectangle to to canvas
+       */
+      function color_rect(topLeftX, topLeftY, rectangleWidth, rectangleHeight, fillColor) {
+          canvas_context.fillStyle = fillColor;
+          canvas_context.fillRect(topLeftX,topLeftY, rectangleWidth,rectangleHeight);
+      }
+      /*
+       * Function: color_circle()
+       *
+       * helper function to draw a circle. Useful because parts of the formula
+       * will always be the same for a circle.  This allows a one-liner to create a
+       * circle on screen
+       *
+       * Parameters:
+       *
+       *    circleX : (NUMBER) -> x position of circle center
+       *    circleY : (NUMBER) -> y position of circle center
+       *    radius : (NUMBER) -> radius of the circle to draw
+       *    fillColor : (STRING) ->  hex/rgba string
+       *
+       * Returns: null, draws circle to canvas
+       */
+      function color_circle(circleX, circleY, radius, fillColor) {
+          canvas_context.fillStyle = fillColor;
           canvas_context.beginPath();
-          // arcs for .arc() -> x/y pos of center, radius
-          canvas_context.arc( ball_x ,ball_y, 10, 0, Math.PI*2, true);
+          canvas_context.arc( circleX,circleY, radius, 0,Math.PI*2, true );
           canvas_context.fill();
       }
+
     </script>
   </body>
 </html>
