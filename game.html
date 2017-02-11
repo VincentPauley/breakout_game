@@ -11,15 +11,18 @@
 
     <!-- Script -->
     <script>
-
+      // canvas & context are stored globally
       let canvas, canvas_context;
-
       // declare ball position and speeds for both x & y axis
       let ball_x = 50,
           ball_speed_x = 5,
           ball_y = 20,
           ball_speed_y = 13;
-
+      /*
+       * Initial Setup
+       *
+       * creates canvas and sets up the game loop logic.
+       */
       window.onload = function() {
           canvas = document.getElementById('game-canvas');
           canvas_context = canvas.getContext('2d');
@@ -27,8 +30,32 @@
           let frames_per_second = 30;
           setInterval( update_all, 1000 / frames_per_second); // <-- call update function using framerate var
       }
-      // draws everything to the canvas
+      /*
+       * Function: update_all()
+       *
+       * called on an interval of framerate per/second.  calls functions
+       * needed to update positions and redraw canvas.
+       *
+       * Parameters: none
+       *
+       * Returns: null, passes control to other functions
+       */
       function update_all() {
+          modify_ball_position();
+          draw_frame();
+      }
+      /*
+       * Function: modify_ball_position()
+       *
+       * updates ball's position by incrementing it's x/y pos by the speed.  Also
+       * contains logic to check if ball is within boundaries of the canvas and
+       * reverse the movement direction as needed.
+       *
+       * Parameters: none
+       *
+       * Returns: null, updates globals
+       */
+      function modify_ball_position() {
           // increment ball x/y position by current speed values
           ball_x += ball_speed_x;
           ball_y += ball_speed_y;
@@ -41,9 +68,20 @@
           if( ball_y > canvas.height || ball_y <= 0) {
               ball_speed_y *= -1;
           }
-
+      }
+      /*
+       * Function: draw_frame()
+       *
+       * redraws canvas completely.  Looks at position of the ball
+       * which is stored in global vars: ball_x & ball_y
+       *
+       * Parameters: none, uses globals
+       *
+       * Returns: null, DOM Manipulation
+       */
+      function draw_frame() {
           // draw to canvas with variable positions
-          canvas_context.fillStyle = '#000';
+          canvas_context.fillStyle = 'limegreen';
           canvas_context.fillRect(0,0, canvas.width, canvas.height);
 
           canvas_context.fillStyle = '#FFF';
