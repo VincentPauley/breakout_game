@@ -18,6 +18,50 @@
           ball_speed_x = 5,
           ball_y = 20,
           ball_speed_y = 13;
+
+      // paddle definition (constans often defined in all caps, not required though...)
+      const PADDLE_WIDTH = 100;
+      const PADDLE_HEIGHT = 10;
+      const PADDLE_DISTANCE_FROM_EDGE = 60;
+      let paddle_x = 400;
+      /*
+       * Function: ball_reset()
+       *
+       * resets the position of the ball in the center of the canvas,
+       * called when the ball hits the bottom.
+       *
+       * Parameters: none
+       *
+       * Returns, null: modifies global values
+       */
+      function ball_reset() {
+          ball_x = canvas.width / 2;
+          ball_y = canvas.height / 2;
+      }
+      /*
+       * Function: updateMousePos()
+       *
+       * Intakes the position of the mouse and uses some
+       * quirky canvas logic to adjust within the context of the canvas boundary.
+       *
+       * TLDR: turns mouse X pos into the centered position of the paddle.
+       *
+       * Parameters: evt (EVENT OBJECT)
+       *
+       * Returns: null, updates paddle_x global value
+       */
+      function updateMousePos( evt ) {
+
+          let rect = canvas.getBoundingClientRect();
+          let root = document.documentElement;
+
+
+          let mouse_x = evt.clientX - rect.left - root.scrollLeft;
+          // let mouse_y = evt.clientY - rect.top - root.scrollLeft;
+
+          paddle_x = mouse_x - PADDLE_WIDTH / 2;
+
+      }
       /*
        * Initial Setup
        *
@@ -29,6 +73,8 @@
 
           let frames_per_second = 60;
           setInterval( update_all, 1000 / frames_per_second); // <-- call update function using framerate var
+          // track mouse movement and use it to position the paddle
+          canvas.addEventListener('mousemove', updateMousePos);
       }
       /*
        * Function: update_all()
@@ -65,7 +111,29 @@
               ball_speed_x *= -1;
           }
           // reverse direction of y-axis speed when boundaries are hit
-          if( ball_y > canvas.height || ball_y <= 0) {
+
+          // the y control is split because we want different behavior when the ball hits the bottom of the screen
+          if( ball_y > canvas.height ) {
+              ball_reset();
+          }
+          if( ball_y <= 0) {
+              ball_speed_y *= -1;
+          }
+
+          // retrieve updated coordinates of paddle edges
+          let paddle_top_edge = canvas.height-PADDLE_DISTANCE_FROM_EDGE;
+          let paddle_bottom_edge = canvas.height-PADDLE_DISTANCE_FROM_EDGE + PADDLE_HEIGHT; // look closely, remember that y number becomes GREATER as you go downward.
+          let paddle_left_edge = paddle_x;
+          let paddle_right_edge = paddle_x + PADDLE_WIDTH;
+          // check for collision
+          // this is the most complex piece of the game, it checks if the ball is contained within the coordinates of the paddle (triggers deflection if so)
+
+          if( ball_y > paddle_top_edge &&  // below top of paddle
+              ball_y < paddle_bottom_edge && // above bottom of paddle
+              ball_x > paddle_left_edge && //right of the left edge
+              ball_x < paddle_right_edge // left of the right edge
+            ) {
+              // collision! reverse the ball's direction
               ball_speed_y *= -1;
           }
       }
@@ -81,9 +149,11 @@
        */
       function draw_frame() {
           // refresh background:
-          color_rect(0,0, canvas.width,canvas.height, 'limegreen');
+          color_rect(0,0, canvas.width,canvas.height, '#00FF7F');
           // refresh ball background:
           color_circle(ball_x ,ball_y, 10, '#FFF');
+          // draw paddle
+          color_rect(paddle_x,canvas.height-PADDLE_DISTANCE_FROM_EDGE, PADDLE_WIDTH, PADDLE_HEIGHT, '#FFF');
       }
       /*
        * Function: color_rect()
