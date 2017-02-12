@@ -24,6 +24,13 @@
       const PADDLE_HEIGHT = 10;
       const PADDLE_DISTANCE_FROM_EDGE = 60;
       let paddle_x = 400;
+
+
+      // store mouse location as globals for debug purposes
+      let mouse_x;
+      let mouse_y;
+
+
       /*
        * Function: ball_reset()
        *
@@ -56,8 +63,8 @@
           let root = document.documentElement;
 
 
-          let mouse_x = evt.clientX - rect.left - root.scrollLeft;
-          // let mouse_y = evt.clientY - rect.top - root.scrollLeft;
+          mouse_x = evt.clientX - rect.left - root.scrollLeft;
+          mouse_y = evt.clientY - rect.top - root.scrollLeft;
 
           paddle_x = mouse_x - PADDLE_WIDTH / 2;
 
@@ -135,6 +142,12 @@
             ) {
               // collision! reverse the ball's direction
               ball_speed_y *= -1;
+
+              // get the position of the paddle hit to add some skill to the hit
+              let center_paddle_x = paddle_x + PADDLE_WIDTH / 2;
+              let ball_distance_from_paddle_center_x = ball_x - center_paddle_x;
+              // adjust ball speed (and thus angle of the ball speed)
+              ball_speed_x = ball_distance_from_paddle_center_x * .35;
           }
       }
       /*
@@ -154,6 +167,8 @@
           color_circle(ball_x ,ball_y, 10, '#FFF');
           // draw paddle
           color_rect(paddle_x,canvas.height-PADDLE_DISTANCE_FROM_EDGE, PADDLE_WIDTH, PADDLE_HEIGHT, '#FFF');
+
+          color_text(mouse_x + ", " + mouse_y, mouse_x, mouse_y, 'red');
       }
       /*
        * Function: color_rect()
@@ -195,6 +210,24 @@
           canvas_context.beginPath();
           canvas_context.arc( circleX,circleY, radius, 0,Math.PI*2, true );
           canvas_context.fill();
+      }
+      /*
+       * Function: color_text()
+       *
+       * helper function to write text to the canvas
+       *
+       * Parameters:
+       *
+       *    showWords (STRING) -> text to be written to canvas
+       *    textX (NUMBER) -> X coordinate of the text string
+       *    textY (NUMBER) -> Y coordinate of the text string
+       *    fillColor (STRING) -> rgba/hex code string for the color of the text
+       *
+       * Returns: null, draws text to canvas
+       */
+      function color_text(showWords, textX,textY, fillColor) {
+          canvas_context.fillStyle = fillColor;
+          canvas_context.fillText(showWords, textX,textY);
       }
 
     </script>
