@@ -19,6 +19,17 @@
           ball_y = 20,
           ball_speed_y = 13;
 
+      // breakable book attributes
+      const BRICK_WIDTH = 100;
+      const BRICK_HEIGHT = 50;
+      const BRICK_COUNT = 4;
+
+      // these vars track weather a block is visible or not
+      let brick_0 = true,
+          brick_1 = false,
+          brick_2 = true,
+          brick_3 = true;
+
       // paddle definition (constans often defined in all caps, not required though...)
       const PADDLE_WIDTH = 100;
       const PADDLE_HEIGHT = 10;
@@ -94,11 +105,11 @@
        * Returns: null, passes control to other functions
        */
       function update_all() {
-          modify_ball_position();
+          recalculate_positioning();
           draw_frame();
       }
       /*
-       * Function: modify_ball_position()
+       * Function: recalculate_positioning()
        *
        * updates ball's position by incrementing it's x/y pos by the speed.  Also
        * contains logic to check if ball is within boundaries of the canvas and
@@ -108,7 +119,7 @@
        *
        * Returns: null, updates globals
        */
-      function modify_ball_position() {
+      function recalculate_positioning() {
           // increment ball x/y position by current speed values
           ball_x += ball_speed_x;
           ball_y += ball_speed_y;
@@ -167,8 +178,22 @@
           color_circle(ball_x ,ball_y, 10, '#FFF');
           // draw paddle
           color_rect(paddle_x,canvas.height-PADDLE_DISTANCE_FROM_EDGE, PADDLE_WIDTH, PADDLE_HEIGHT, '#FFF');
-
+          // show mouse coordinates
           color_text(mouse_x + ", " + mouse_y, mouse_x, mouse_y, 'red');
+          draw_bricks();
+      }
+      function draw_bricks() {
+
+          /*
+           * Two subtlties to notice in how these are drawn.  The x Coord is calculated by multiplying the standard
+           * width of a brick by the brick's position.
+           *
+           * and the brick's width is actually two less than the global value to allow for spacing.
+           */
+          if( brick_0 ) color_rect( BRICK_WIDTH * 0, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
+          if( brick_1 ) color_rect( BRICK_WIDTH * 1, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
+          if( brick_2 ) color_rect( BRICK_WIDTH * 2, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
+          if( brick_3 ) color_rect( BRICK_WIDTH * 3, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
       }
       /*
        * Function: color_rect()
