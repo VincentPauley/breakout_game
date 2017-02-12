@@ -20,15 +20,15 @@
           ball_speed_y = 13;
 
       // breakable book attributes
-      const BRICK_WIDTH = 100;
-      const BRICK_HEIGHT = 50;
-      const BRICK_COUNT = 4;
+      const BRICK_WIDTH = 80;
+      const BRICK_HEIGHT = 20;
+      const BRICK_GAP = 3;
+      const BRICK_ROWS = 14;
+      const BRICK_COLS = 10;
 
       // these vars track weather a block is visible or not
-      let brick_0 = true,
-          brick_1 = false,
-          brick_2 = true,
-          brick_3 = true;
+      let brick_grid = [];
+
 
       // paddle definition (constans often defined in all caps, not required though...)
       const PADDLE_WIDTH = 100;
@@ -88,6 +88,10 @@
       window.onload = function() {
           canvas = document.getElementById('game-canvas');
           canvas_context = canvas.getContext('2d');
+
+          // set bricks to initial state
+          brick_reset();
+
 
           let frames_per_second = 60;
           setInterval( update_all, 1000 / frames_per_second); // <-- call update function using framerate var
@@ -182,18 +186,82 @@
           color_text(mouse_x + ", " + mouse_y, mouse_x, mouse_y, 'red');
           draw_bricks();
       }
+      /*
+       * Function: row_column_to_array_index()
+       *
+       * uses the column & row index to return the index of the block within the
+       * brick_grid global array
+       *
+       * Parameters:
+       *
+       *    col (NUMBER) -> column index being iterated over
+       *    row (NUMBER) -> row index being iterated over
+       *
+       * Returns: (NUMBER) array index of the block
+       */
+      function row_column_to_array_index(col, row) {
+          return col + BRICK_COLS * row;
+      }
+      /*
+       * Function: draw_bricks()
+       */
       function draw_bricks() {
-
           /*
            * Two subtlties to notice in how these are drawn.  The x Coord is calculated by multiplying the standard
            * width of a brick by the brick's position.
            *
            * and the brick's width is actually two less than the global value to allow for spacing.
            */
-          if( brick_0 ) color_rect( BRICK_WIDTH * 0, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
-          if( brick_1 ) color_rect( BRICK_WIDTH * 1, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
-          if( brick_2 ) color_rect( BRICK_WIDTH * 2, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
-          if( brick_3 ) color_rect( BRICK_WIDTH * 3, 0, BRICK_WIDTH - 2, BRICK_HEIGHT,  '#008B8B');
+
+          // draw row by row
+          for(var eachRow=0; eachRow<BRICK_ROWS; eachRow++) {
+
+              for( var eachColumn=0; eachColumn<BRICK_COLS; eachColumn++ ) {
+
+                  // console.log( eachColumn * eachRow );
+
+                  let array_index = row_column_to_array_index(eachColumn, eachRow);
+
+                  // console.log( brick_grid[ eachColumn * eachRow ] );
+                  if( brick_grid[ array_index ] ) {
+                      color_rect(
+                          BRICK_WIDTH * eachColumn,  // LEFT POSITION OF BRICK
+                          BRICK_HEIGHT * eachRow, // RIGHT POSITION OF BRICK
+                          BRICK_WIDTH - BRICK_GAP, // WIDTH OF BRICK (with gap subtracted)
+                          BRICK_HEIGHT - BRICK_GAP, // HEIGHT OF BRICK (with gap subtracted)
+                          '#008B8B' // BRICK COLOR
+                      );
+                  }
+              }
+              /*
+              brick_grid.forEach(( brick, index ) => {
+                  if( brick_grid[ index ] ) color_rect(
+                      BRICK_WIDTH * index,  // LEFT POSITION OF BRICK
+                      BRICK_HEIGHT * eachRow, // RIGHT POSITION OF BRICK
+                      BRICK_WIDTH - BRICK_GAP, // WIDTH OF BRICK (with gap subtracted)
+                      BRICK_HEIGHT - BRICK_GAP, // HEIGHT OF BRICK (with gap subtracted)
+                      '#008B8B' // BRICK COLOR
+                  );
+              });
+              */
+          }
+
+      }
+      /*
+       * Function: brick_reset()
+       *
+       * pushes boolean values into the brick grid to initialize all
+       * bricks as a visible state.  Called on window load
+       *
+       * Parameters: none
+       *
+       * Returns: null, modifies global
+       */
+      function brick_reset() {
+          for(var i=0;i<(BRICK_COLS * BRICK_ROWS);i++) {
+              brick_grid.push( true );
+          }
+          brick_grid[ 4] = false;
       }
       /*
        * Function: color_rect()
